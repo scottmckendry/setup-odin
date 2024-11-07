@@ -87985,6 +87985,14 @@ module.exports = eval("require")("encoding");
 
 /***/ }),
 
+/***/ 2854:
+/***/ ((module) => {
+
+module.exports = eval("require")("tar");
+
+
+/***/ }),
+
 /***/ 2613:
 /***/ ((module) => {
 
@@ -89914,6 +89922,7 @@ const io = __nccwpck_require__(4994);
 const github = __nccwpck_require__(3228);
 const AdmZip = __nccwpck_require__(1316);
 const fs = __nccwpck_require__(9896);
+const tar = __nccwpck_require__(2854);
 
 const os = __nccwpck_require__(857);
 
@@ -90230,6 +90239,15 @@ async function downloadRelease(inputs) {
     const zipInZip = new AdmZip(maybeZipInZip);
     zipInZip.extractAllTo(common.odinPath(), false, true);
     fs.unlinkSync(maybeZipInZip);
+  }
+  const maybeTarInZip = `${common.odinPath()}/dist.tar.gz`;
+  if (fs.existsSync(maybeTarInZip)) {
+    core.info('Extracting nested tar.gz');
+    await tar.x({
+      file: maybeTarInZip,
+      cwd: common.odinPath(),
+    });
+    fs.unlinkSync(maybeTarInZip);
   }
 
   // NOTE: after dev-2024-06 releases don't seem to be doubly zipped anymore
